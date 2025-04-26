@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Code Sculptor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-bg: #1a1a2e;
+            --secondary-bg: #161625;
+            --text-primary: #f0f0f0;
+            --text-secondary: #ccc;
+            --accent-color: #64ffda;
+            --border-color: #2c2c44;
+            --header-bg: #25253b;
+            --button-bg: var(--accent-color);
+            --button-text: var(--primary-bg);
+            --button-hover-bg: #45cbb1;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            height: 100vh;
+            margin: 0;
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+
+        .code-panel {
+            display: flex;
+            flex-direction: column;
+            background-color: var(--secondary-bg);
+            border-right: 1px solid var(--border-color);
+        }
+
+        .code-panel:last-child {
+            border-right: none;
+        }
+
+        .panel-header {
+            background-color: var(--header-bg);
+            color: var(--accent-color);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95em;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-editor {
+            flex-grow: 1;
+            padding: 20px;
+            box-sizing: border-box;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            line-height: 1.7;
+            background-color: transparent;
+            color: var(--text-secondary);
+            border: none;
+            outline: none;
+            resize: none;
+        }
+
+        #preview-area {
+            display: flex;
+            flex-direction: column;
+            background-color: var(--primary-bg);
+        }
+
+        #preview-header {
+            background-color:  #050b27;
+            color: var(--accent-color);
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border-color);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95em;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #live-preview {
+            flex-grow: 1;
+            border: none;
+            background-color: #f8f8f8;
+            border-radius: 8px;
+            margin: 20px;
+        }
+
+        .action-button {
+            background-color: #ca90d8;
+            color: var(--button-text);
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            font-size: 0.9em;
+            transition: background-color 0.3s ease;
+        }
+
+        .action-button:hover {
+            background-color: var(--button-hover-bg);
+        }
+    </style>
+</head>
+<body>
+    <div class="code-panel">
+        <div class="panel-header">
+            HTML
+            <button class="action-button" onclick="redirectToLiveDemo()">Open Live Demo</button>
+        </div>
+        <textarea id="html-editor" class="code-editor"></textarea>
+    </div>
+    <div class="code-panel">
+        <div class="panel-header">CSS</div>
+        <textarea id="css-editor" class="code-editor"></textarea>
+    </div>
+    <div class="code-panel">
+        <div class="panel-header">JavaScript</div>
+        <textarea id="javascript-editor" class="code-editor"></textarea>
+    </div>
+    <div id="preview-area">
+        <div id="preview-header">
+            Live Output
+            <button class="action-button" onclick="redirectToLiveDemo()">Open Live Demo</button>
+        </div>
+        <iframe id="live-preview"></iframe>
+    </div>
+
+    <script>
+        const htmlEditor = document.getElementById('html-editor');
+        const cssEditor = document.getElementById('css-editor');
+        const javascriptEditor = document.getElementById('javascript-editor');
+        const previewFrame = document.getElementById('live-preview');
+    
+        function updatePreview() {
+            const html = htmlEditor.value;
+            const css = cssEditor.value;
+            const javascript = javascriptEditor.value;
+            const previewDocument = previewFrame.contentDocument || previewFrame.contentWindow.document;
+    
+           
+            previewDocument.open();
+            previewDocument.write(`<!DOCTYPE html><html><head></head><body></body></html>`);
+            previewDocument.close();
+    
+            
+            previewDocument.body.innerHTML = html;
+    
+            
+            const styleTag = previewDocument.createElement('style');
+            styleTag.textContent = css;
+            previewDocument.head.appendChild(styleTag);
+    
+            
+            const scriptTag = previewDocument.createElement('script');
+            scriptTag.textContent = javascript;
+            previewDocument.body.appendChild(scriptTag);
+        }
+    
+        htmlEditor.addEventListener('input', updatePreview);
+        cssEditor.addEventListener('input', updatePreview);
+        javascriptEditor.addEventListener('input', updatePreview);
+    
+        
+        updatePreview();
+    
+        function redirectToLiveDemo() {
+            const htmlContent = htmlEditor.value;
+            const cssContent = cssEditor.value;
+            const jsContent = javascriptEditor.value;
+    
+            const combinedHTML = `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Live Demo</title>
+                    <style>${cssContent}</style>
+                </head>
+                <body>
+                    ${htmlContent}
+                    <script>${jsContent}<\/script>
+                </body>
+                </html>
+            `;
+    
+            const blob = new Blob([combinedHTML], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+        }
+    </script>
+    
+</body>
+</html>
